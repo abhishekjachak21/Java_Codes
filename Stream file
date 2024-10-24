@@ -1,0 +1,125 @@
+Here's a list of challenging examples for different functions in Java Stream API, covering filter, map, reduce, collect, sorted, flatMap, etc.:
+
+### 1. **`filter`**
+- **Challenge:** Find employees whose email domains are `example.com` and whose salary is greater than the average salary of all employees.
+  
+```java
+List<Employee> filteredEmployees = employeeList.stream()
+    .filter(e -> e.email.endsWith("@example.com"))
+    .filter(e -> e.salary > employeeList.stream().mapToInt(emp -> emp.salary).average().orElse(0))
+    .collect(Collectors.toList());
+System.out.println(filteredEmployees);
+```
+
+### 2. **`map`**
+- **Challenge:** Create a new list where each employee's name is reversed and all vowels are removed.
+
+```java
+List<String> reversedNames = employeeList.stream()
+    .map(e -> new StringBuilder(e.employeeName.replaceAll("[AEIOUaeiou]", "")).reverse().toString())
+    .collect(Collectors.toList());
+System.out.println(reversedNames);
+```
+
+### 3. **`reduce`**
+- **Challenge:** Calculate the product of salaries of all employees who are `Developers`.
+
+```java
+int productOfSalaries = employeeList.stream()
+    .filter(e -> e.designation.equals("Developer"))
+    .map(e -> e.salary)
+    .reduce(1, (a, b) -> a * b);
+System.out.println(productOfSalaries);
+```
+
+### 4. **`collect`**
+- **Challenge:** Group employees by email domain and count how many employees are in each domain.
+
+```java
+Map<String, Long> emailDomainCounts = employeeList.stream()
+    .collect(Collectors.groupingBy(e -> e.email.substring(e.email.indexOf('@') + 1), Collectors.counting()));
+System.out.println(emailDomainCounts);
+```
+
+### 5. **`sorted`**
+- **Challenge:** Sort employees by salary in descending order, and in case of a tie, sort by name in alphabetical order.
+
+```java
+List<Employee> sortedEmployees = employeeList.stream()
+    .sorted(Comparator.comparing(Employee::getSalary).reversed()
+    .thenComparing(Employee::getEmployeeName))
+    .collect(Collectors.toList());
+System.out.println(sortedEmployees);
+```
+
+### 6. **`flatMap`**
+- **Challenge:** Given a list of employees where each employee has a list of `projects`, find a list of all unique project names across all employees.
+
+```java
+List<String> allProjects = employeeList.stream()
+    .flatMap(e -> e.getProjects().stream())
+    .distinct()
+    .collect(Collectors.toList());
+System.out.println(allProjects);
+```
+
+### 7. **`min` & `max`**
+- **Challenge:** Find the employee with the longest name.
+
+```java
+Employee employeeWithLongestName = employeeList.stream()
+    .max(Comparator.comparingInt(e -> e.employeeName.length()))
+    .orElseThrow(NoSuchElementException::new);
+System.out.println(employeeWithLongestName);
+```
+
+### 8. **`findFirst`**
+- **Challenge:** Find the first employee who is both a `Tester` and whose salary is greater than 50,000.
+
+```java
+Optional<Employee> firstTester = employeeList.stream()
+    .filter(e -> e.designation.equals("Tester") && e.salary > 50000)
+    .findFirst();
+firstTester.ifPresent(System.out::println);
+```
+
+### 9. **`distinct`**
+- **Challenge:** Get a distinct list of all email domains across employees.
+
+```java
+List<String> uniqueDomains = employeeList.stream()
+    .map(e -> e.email.substring(e.email.indexOf('@') + 1))
+    .distinct()
+    .collect(Collectors.toList());
+System.out.println(uniqueDomains);
+```
+
+### 10. **`anyMatch` / `allMatch` / `noneMatch`**
+- **Challenge:** Check if any employee's salary is more than 1 million.
+
+```java
+boolean anyHighEarners = employeeList.stream()
+    .anyMatch(e -> e.salary > 1000000);
+System.out.println(anyHighEarners);
+```
+
+### 11. **`partitioningBy`**
+- **Challenge:** Partition the employees into two groups: one where their salary is above the average and the other where it's below or equal.
+
+```java
+Map<Boolean, List<Employee>> partitionedBySalary = employeeList.stream()
+    .collect(Collectors.partitioningBy(e -> e.salary > employeeList.stream().mapToInt(emp -> emp.salary).average().orElse(0)));
+System.out.println(partitionedBySalary);
+```
+
+### 12. **`peek`**
+- **Challenge:** Log the names of all employees while filtering those whose salary is above 50,000.
+
+```java
+List<Employee> peekedEmployees = employeeList.stream()
+    .peek(e -> System.out.println("Processing employee: " + e.employeeName))
+    .filter(e -> e.salary > 50000)
+    .collect(Collectors.toList());
+```
+
+Each of these examples highlights a core function of the Java Stream API and uses more advanced problem-solving techniques to challenge developers.
